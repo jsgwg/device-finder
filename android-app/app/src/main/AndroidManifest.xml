@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 息屏/后台取定位，必须后台定位权限（设置里选「始终允许」） -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!-- 短信触发兜底通道 -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <application
+        android:name=".MyApplication"
+        android:label="DeviceFinder"
+        android:icon="@android:drawable/ic_menu_mylocation">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 高德定位 Key：在高德开放平台按 包名 + SHA1 申请 -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="替换为你的高德Key" />
+
+        <!-- 极光推送 AppKey：在极光控制台按包名申请 -->
+        <meta-data
+            android:name="JPUSH_APPKEY"
+            android:value="替换为你的极光AppKey" />
+        <meta-data
+            android:name="JPUSH_CHANNEL"
+            android:value="default" />
+
+        <!-- JPush 自定义消息（透传）回调，通知栏不显示 -->
+        <receiver
+            android:name=".JPushReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
+                <category android:name="com.example.devicefinder" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 短信触发兜底 -->
+        <receiver
+            android:name=".SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="1000">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

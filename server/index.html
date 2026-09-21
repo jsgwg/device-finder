@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设备找回面板</title>
+<style>
+  body{font:14px/1.7 "Microsoft YaHei",system-ui,sans-serif;margin:0;background:#F5F5F0;color:#222}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{color:#888;font-size:12px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;
+        box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #EEE;font-size:13px}
+  th{background:#1A1A1A;color:#fff;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .btn{display:inline-block;padding:5px 14px;border:none;border-radius:5px;cursor:pointer;
+       background:#FCAF01;color:#1A1A1A;font-weight:600;font-size:12px}
+  .btn:disabled{background:#CCC;cursor:wait}
+  .maplink{color:#0B5478;text-decoration:none}
+  .empty{padding:32px;text-align:center;color:#999}
+  .ts{color:#999;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>设备找回面板</h1>
+  <div class="sub">点「定位」下发指令，设备数秒后上报新位置，页面每 3 秒自动刷新</div>
+  <table>
+    <thead><tr><th>设备</th><th>最后位置</th><th>电量</th><th>上报时间</th><th></th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<script>
+const fmt = ts => ts ? new Date(ts * 1000).toLocaleString("zh-CN") : "从未上报";
+const mapLink = (lat, lng) => lat == null ? "—"
+  : `<a class="maplink" target="_blank" href="https://uri.amap.com/marker?position=${lng},${lat}">${lat.toFixed(5)}, ${lng.toFixed(5)}</a>`;
+
+async function load() {
+  const rows = document.getElementById("rows");
+  const list = await (await fetch("/api/devices")).json();
+  rows.innerHTML = list.length ? "" : `<tr><td colspan="5" class="empty">暂无设备，请在手机端完成注册</td></tr>`;
+  for (const d of list) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.model || "—"}<br><span class="ts">${d.device_id.slice(0, 12)}…</span></td>
+      <td>${mapLink(d.lat, d.lng)}<br><span class="ts">精度 ±${d.acc ?? "—"}m</span></td>
+      <td>${d.battery >= 0 ? d.battery + "%" : "—"}</td>
+      <td><span class="ts">${fmt(d.last_seen)}</span></td>
+      <td><button class="btn" id="b-${d.device_id}">定位</button></td>`;
+    rows.appendChild(tr);
+    tr.querySelector("button").onclick = () => locate(d.device_id);
+  }
+}
+
+async function locate(id) {
+  const btn = document.getElementById("b-" + id);
+  btn.disabled = true; btn.textContent = "下发中…";
+  try {
+    const r = await fetch("/api/locate/" + id, { method: "POST" });
+    if (!r.ok) alert("失败：" + (await r.json()).detail);
+  } catch (e) { alert("请求异常：" + e); }
+  setTimeout(() => { btn.disabled = false; btn.textContent = "定位"; load(); }, 1500);
+}
+
+load();
+setInterval(load, 3000);
+</script>
+</body>
+</html>

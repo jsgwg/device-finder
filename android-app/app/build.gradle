@@ -1,0 +1,58 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "com.example.devicefinder"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.example.devicefinder"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+
+    // 固定签名：keystore 已提交到仓库（android-app/device-finder.keystore）
+    // 本地或云端构建出的 APK 签名一致，高德 Key 只需按下面 SHA1 申请一次
+    signingConfigs {
+        create("release") {
+            storeFile = file("../device-finder.keystore")
+            storePassword = "DeviceFinder@2026"
+            keyAlias = "devicefinder"
+            keyPassword = "DeviceFinder@2026"
+        }
+    }
+    buildTypes {
+        getByName("debug") { signingConfig = signingConfigs.getByName("release") }
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+        }
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+
+    // 国内推送主通道（自定义透传消息，不显示通知）
+    implementation("cn.jiguang.sdk:jpush:5.2.4")
+    implementation("cn.jiguang.sdk:jcore:4.0.6")
+
+    // 高德定位 SDK（国内无 GMS 环境）
+    implementation("com.amap.api:location:6.4.5")
+
+    // 轮询兜底（无前台服务、无通知）
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+}
