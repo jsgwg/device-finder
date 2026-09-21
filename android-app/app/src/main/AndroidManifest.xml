@@ -26,12 +26,12 @@
         <!-- 高德定位 Key：在高德开放平台按 包名 + SHA1 申请 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="替换为你的高德Key" />
+            android:value="8c526679e56f6531049b7e12046a4c31" />
 
         <!-- 极光推送 AppKey：在极光控制台按包名申请 -->
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="替换为你的极光AppKey" />
+            android:value="3a945e6a0f214d83a39b88f0" />
         <meta-data
             android:name="JPUSH_CHANNEL"
             android:value="default" />
