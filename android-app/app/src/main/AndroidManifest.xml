@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,13 +29,15 @@
             android:name="com.amap.api.v2.apikey"
             android:value="8c526679e56f6531049b7e12046a4c31" />
 
-        <!-- 极光推送 AppKey：在极光控制台按包名申请 -->
+        <!-- 极光推送 AppKey：在极光控制台按包名申请（tools:replace 覆盖 SDK 内置占位声明） -->
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="3a945e6a0f214d83a39b88f0" />
+            android:value="3a945e6a0f214d83a39b88f0"
+            tools:replace="android:value" />
         <meta-data
             android:name="JPUSH_CHANNEL"
-            android:value="default" />
+            android:value="default"
+            tools:replace="android:value" />
 
         <!-- JPush 自定义消息（透传）回调，通知栏不显示 -->
         <receiver
