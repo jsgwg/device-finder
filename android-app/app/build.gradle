@@ -13,6 +13,12 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        // 极光 SDK Manifest 占位符（官方集成要求）
+        manifestPlaceholders = [
+            JPUSH_PKGNAME: applicationId,
+            JPUSH_APPKEY : "3a945e6a0f214d83a39b88f0",
+            JPUSH_CHANNEL: "default"
+        ]
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
